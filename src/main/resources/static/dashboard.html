@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+<div class="container">
+    <h1>Staff Dashboard</h1>
+    <div class="controls">
+        <button id="createStaffBtn" class="btn">Create New Staff</button>
+        <label for="searchInput"></label><input type="text" id="searchInput" placeholder="Search..." class="search-input">
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+    </div>
+    <table id="staffTable">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Contact Number</th>
+            <th>Department</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Staff members will be populated here -->
+        </tbody>
+    </table>
+    <div class="pagination">
+        <button id="prevPageBtn" class="btn">Previous</button>
+        <span id="currentPage">1</span>
+        <button id="nextPageBtn" class="btn">Next</button>
+    </div>
+
+    <!-- Popup for Create/Update Staff -->
+    <div id="staffModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1 id="formTitle">Create New Staff Member</h1>
+            <form id="staffForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactNumber">Contact Number:</label>
+                    <input type="text" id="contactNumber" name="contactNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="departmentSelect">Department:</label>
+                    <select id="departmentSelect" name="departmentId" required>
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="image">Image:</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn">Save Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="js/dashboard.js"></script>
+</body>
+</html>
