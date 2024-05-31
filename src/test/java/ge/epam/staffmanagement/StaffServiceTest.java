@@ -23,6 +23,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//FIXME: tests don't covers full flow (usually you comparing only by 1-2 field that lead this to success when they need to fail)
+//FIXME: tests are hardly readable
 @DataJpaTest
 @ActiveProfiles("test")
 class StaffServiceTest {

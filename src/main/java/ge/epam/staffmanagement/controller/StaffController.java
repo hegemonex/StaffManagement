@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
 
+//TODO: provide documentation for swagger pls
 @RestController
 @RequestMapping("/api/staff")
 public class StaffController {
@@ -41,7 +42,7 @@ public class StaffController {
 
     @GetMapping
     public Page<Staff> getStaff(
-            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "") String query, //FIXME: query injection vulnerability!!! use instead JPA Specification API || Criteria API
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -54,8 +55,9 @@ public class StaffController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createStaff(@RequestPart String requestDto,
+    public ResponseEntity<String> createStaff(@RequestPart String requestDto, //FIXME: use DTO with mapstruct||modelmapper and validation on DTO
                                               @RequestPart MultipartFile image) {
+        //fixme: instead of try{} use @ControllerAdvice with @ExceptionHandler
         try {
             ValidateDTO validateDTO = validateStaff(requestDto);
             if (validateDTO.getMessage() == null) {
@@ -66,6 +68,9 @@ public class StaffController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validateDTO.getMessage());
             }
         } catch (Exception ex) {
+            //fixme: it is bad practice to return exception message for 500, because it opens for users what happen with
+            //fixme: the application and this info can consists sencetive info that allows to huck smth in the app
+            //fixme: instead, return some prepared message 'Sorry, smth went wrong, we are working on this'
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
         }
 
@@ -73,7 +78,7 @@ public class StaffController {
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateStaff(@PathVariable Long id,
-                                              @RequestPart String requestDto,
+                                              @RequestPart String requestDto, //FIXME: use DTO with mapstruct||modelmapper and validation on DTO
                                               @RequestPart(required = false) MultipartFile image) {
         try {
             ValidateDTO validateDTO = validateStaff(requestDto);

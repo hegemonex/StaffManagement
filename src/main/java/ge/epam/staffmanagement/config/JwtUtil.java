@@ -11,12 +11,16 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
+//FIXME: if you are using spring component is is not ok to name it as Util, rename it appropriatelly
+//FIXME: https://www.baeldung.com/java-helper-vs-utility-classes
 @Component
 public class JwtUtil {
 
     public static final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 15; // 15 minutes
     public static final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7 days
 
+    //FIXME: SECRET_KEY should be saved in env-variables and can be extracted via @Value
+    //FIXME: Pay attention, secrets are sensetive information and cannot be stored inside the project
     private final String SECRET_KEY = "n6Z3RkJz4nC6K0/7q9P5ZzIyf5hfXZy9HP0eYOUMAA4=";
 
     private Key getSigningKey() {

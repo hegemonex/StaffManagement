@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+//FIXme: rewrite with Spring mockMvc
 @ActiveProfiles("test")
 class AuthServiceTest {
 

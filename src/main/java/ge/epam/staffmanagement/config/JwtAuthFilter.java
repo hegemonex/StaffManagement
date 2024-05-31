@@ -30,11 +30,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader("Authorization");//FIXME: avoid of using magic strings https://deviq.com/antipatterns/magic-strings
         final String userName;
         final String jwtToken;
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {//FIXME: avoid of using magic strings https://deviq.com/antipatterns/magic-strings
             filterChain.doFilter(request, response);
             return;
         }
