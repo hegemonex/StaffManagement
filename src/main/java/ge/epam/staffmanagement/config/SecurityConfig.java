@@ -35,6 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        //fixme: this flow is deprecated since spring 6.1, pls rewrite it appropriatelly
         http.csrf().disable()
                 .headers().frameOptions().sameOrigin()
                 .and()

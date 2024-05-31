@@ -17,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO: provide documentation for swagger pls
 @RestController
 public class AuthController {
 
@@ -38,6 +39,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody User user) {
+        //FIXME: would be better to validate the changes on the DTO layer.
+        //FIXME: I would recommend creating UserDTO and use javax || jakarta validation and then you can change
+        //FIXME: registerUser(@RequestBody User user) -> registerUser(@RequestBody @Validate UserDto user) {
         String username = user.getUsername();
         String password = user.getPassword();
 
@@ -57,11 +61,13 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        //FIXME: you have duplications of next 3 rows -> move them to separate method
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
         String accessToken = jwtUtil.createToken(new HashMap<>(), userDetails.getUsername(), JwtUtil.ACCESS_TOKEN_VALIDITY);
         String refreshToken = jwtUtil.createToken(new HashMap<>(), userDetails.getUsername(), JwtUtil.REFRESH_TOKEN_VALIDITY);
 
         Map<String, String> response = new HashMap<>();
+        //FIXME: avoid of using magic strings (and you have suplicates of them) https://deviq.com/antipatterns/magic-strings
         response.put("accessToken", accessToken);
         response.put("refreshToken", refreshToken);
 

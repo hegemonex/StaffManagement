@@ -63,4 +63,6 @@ class StaffSearchTest {
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getLastName()).isEqualTo("Epam");
     }
+
+    //FIXME: add pls scenario with fail cases
 }

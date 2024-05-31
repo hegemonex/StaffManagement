@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+//TODO: provide documentation for swagger pls
 @RestController
 @RequestMapping("api/department")
 public class DepartmentController {

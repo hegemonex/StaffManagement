@@ -34,6 +34,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff createStaffWithImage(Staff staff, Image image) {
+        //fixme: instead of using 'setters' -> use builder pattern (lombok @Builder)
         staff.setImage(image);
         image.setStaff(staff);
         return staffRepository.save(staff);
@@ -41,6 +42,8 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff updateStaff(long id, Staff staffDetails) {
+        //FIXME: use DTO with mapstruct||modelmapper and validation on DTO
+        //fixme: instead of using 'setters' -> use builder pattern (lombok @Builder)
         Staff staff = getStaffById(id);
         staff.setFirstName(staffDetails.getFirstName());
         staff.setLastName(staffDetails.getLastName());
