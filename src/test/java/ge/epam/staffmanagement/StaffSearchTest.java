@@ -6,12 +6,14 @@ import ge.epam.staffmanagement.entity.Department;
 import ge.epam.staffmanagement.entity.Staff;
 import ge.epam.staffmanagement.repository.DepartmentRepository;
 import ge.epam.staffmanagement.repository.StaffRepository;
+import ge.epam.staffmanagement.service.impl.StaffSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
 @DataJpaTest
@@ -25,7 +27,7 @@ class StaffSearchTest {
     private DepartmentRepository departmentRepository;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         Department department1 = new Department();
         department1.setName("IT Department");
         departmentRepository.save(department1);
@@ -54,13 +56,46 @@ class StaffSearchTest {
     }
 
     @Test
-    public void testSearchStaff() {
-        Page<Staff> result = staffRepository.searchStaff("Tekla", PageRequest.of(0, 10));
+    void testSearchStaff() {
+        Specification<Staff> specificationA = new StaffSpecification("Tekla");
+        Page<Staff> result = staffRepository.findAll(specificationA, PageRequest.of(0, 10));
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getFirstName()).isEqualTo("Tekla");
 
-        result = staffRepository.searchStaff("epam", PageRequest.of(0, 10));
+        Specification<Staff> specificationB = new StaffSpecification("epam");
+        result = staffRepository.findAll(specificationB, PageRequest.of(0, 10));
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getLastName()).isEqualTo("Epam");
+    }
+
+    @Test
+    public void testSearchStaffNoMatch() {
+        Specification<Staff> specificationC = new StaffSpecification("NonExistingName");
+        Page<Staff> result = staffRepository.findAll(specificationC, PageRequest.of(0, 10));
+        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getContent()).isEmpty();
+
+        Specification<Staff> specificationD = new StaffSpecification("NonExistingEmail@gmail.com");
+        result = staffRepository.findAll(specificationD, PageRequest.of(0, 10));
+        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getContent()).isEmpty();
+
+        Specification<Staff> specificationE = new StaffSpecification("0000000000");
+        result = staffRepository.findAll(specificationE, PageRequest.of(0, 10));
+        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getContent()).isEmpty();
+    }
+
+    @Test
+    public void testSearchStaffPartialMatch() {
+        Specification<Staff> specificationF = new StaffSpecification("Tek");
+        Page<Staff> result1 = staffRepository.findAll(specificationF, PageRequest.of(0, 10));
+        assertThat(result1.getTotalElements()).isEqualTo(1);
+        assertThat(result1.getContent().get(0).getFirstName()).isEqualTo("Tekla");
+
+        Specification<Staff> specificationG = new StaffSpecification("Epa");
+        Page<Staff> result2 = staffRepository.findAll(specificationG, PageRequest.of(0, 10));
+        assertThat(result2.getTotalElements()).isEqualTo(2);
+        assertThat(result2.getContent().get(0).getFirstName()).isEqualTo("Tekla");
     }
 }

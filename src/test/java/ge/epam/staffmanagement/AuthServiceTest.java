@@ -1,8 +1,9 @@
 package ge.epam.staffmanagement;
 
-import ge.epam.staffmanagement.config.JwtUtil;
+import ge.epam.staffmanagement.config.JwtService;
 import ge.epam.staffmanagement.controller.AuthController;
 import ge.epam.staffmanagement.entity.User;
+import ge.epam.staffmanagement.model.UserDTO;
 import ge.epam.staffmanagement.service.impl.CustomUserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class AuthServiceTest {
     private CustomUserDetailsService userDetailsService;
 
     @Mock
-    private JwtUtil jwtUtil;
+    private JwtService jwtUtil;
 
     @InjectMocks
     private AuthController authController;
@@ -48,7 +49,7 @@ class AuthServiceTest {
     // Registration tests
     @Test
     public void testRegisterUser_Success() {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setUsername("tekla");
         user.setPassword("12345678");
 
@@ -61,7 +62,7 @@ class AuthServiceTest {
 
     @Test
     public void testRegisterUser_ShortUsername() {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setUsername("user");
         user.setPassword("12345678");
 
@@ -74,7 +75,7 @@ class AuthServiceTest {
 
     @Test
     public void testRegisterUser_ShortPassword() {
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setUsername("tekla");
         user.setPassword("123");
 
@@ -100,8 +101,8 @@ class AuthServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(userDetailsService.loadUserByUsername(user.getUsername())).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn(user.getUsername());
-        when(jwtUtil.createToken(anyMap(), eq(user.getUsername()), eq(JwtUtil.ACCESS_TOKEN_VALIDITY))).thenReturn(accessToken);
-        when(jwtUtil.createToken(anyMap(), eq(user.getUsername()), eq(JwtUtil.REFRESH_TOKEN_VALIDITY))).thenReturn(refreshToken);
+        when(jwtUtil.createToken(anyMap(), eq(user.getUsername()), eq(JwtService.ACCESS_TOKEN_VALIDITY))).thenReturn(accessToken);
+        when(jwtUtil.createToken(anyMap(), eq(user.getUsername()), eq(JwtService.REFRESH_TOKEN_VALIDITY))).thenReturn(refreshToken);
 
         ResponseEntity<Map<String, String>> response = authController.loginUser(user);
 
@@ -142,8 +143,8 @@ class AuthServiceTest {
         when(jwtUtil.extractUsername(refreshToken)).thenReturn(username);
         when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
         when(userDetails.getUsername()).thenReturn(username);
-        when(jwtUtil.createToken(anyMap(), eq(username), eq(JwtUtil.ACCESS_TOKEN_VALIDITY))).thenReturn(newAccessToken);
-        when(jwtUtil.createToken(anyMap(), eq(username), eq(JwtUtil.REFRESH_TOKEN_VALIDITY))).thenReturn(newRefreshToken);
+        when(jwtUtil.createToken(anyMap(), eq(username), eq(JwtService.ACCESS_TOKEN_VALIDITY))).thenReturn(newAccessToken);
+        when(jwtUtil.createToken(anyMap(), eq(username), eq(JwtService.REFRESH_TOKEN_VALIDITY))).thenReturn(newRefreshToken);
 
         ResponseEntity<?> responseEntity = authController.refreshAccessToken(tokenRequest);
 

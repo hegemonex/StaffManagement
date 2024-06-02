@@ -19,46 +19,55 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
 
-    public JwtAuthFilter(JwtUtil jwtUtil, @Lazy CustomUserDetailsService userDetailsService) {
-        this.jwtUtil = jwtUtil;
+    public JwtAuthFilter(JwtService jwtService, @Lazy CustomUserDetailsService userDetailsService) {
+        this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException, ServletException {
-        final String authHeader = request.getHeader("Authorization");
+        final String authHeader = request.getHeader(AUTHORIZATION);
         final String userName;
         final String jwtToken;
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith(BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
 
         jwtToken = authHeader.substring(7);
-        userName = jwtUtil.extractUsername(jwtToken);
+        userName = jwtService.extractUsername(jwtToken);
 
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails;
             try {
                 userDetails = userDetailsService.loadUserByUsername(userName);
             } catch (UsernameNotFoundException e) {
-                filterChain.doFilter(request, response);
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 return;
             }
-
-            if (jwtUtil.validateToken(jwtToken)) {
+            if (Boolean.TRUE.equals(jwtService.validateToken(jwtToken))) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            }else{
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                return;
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void sendError(HttpServletResponse response, int statusCode, String message) throws IOException {
+        response.setStatus(statusCode);
+        response.getWriter().write(message);
     }
 }
 

@@ -8,6 +8,7 @@ import ge.epam.staffmanagement.service.StaffService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,23 +42,26 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff updateStaff(long id, Staff staffDetails) {
-        Staff staff = getStaffById(id);
-        staff.setFirstName(staffDetails.getFirstName());
-        staff.setLastName(staffDetails.getLastName());
-        staff.setEmail(staffDetails.getEmail());
-        staff.setDepartment(staffDetails.getDepartment());
-        staff.setContactNumber(staffDetails.getContactNumber());
+        Staff existingStaff = getStaffById(id);
+        Staff.StaffBuilder staffBuilder = existingStaff.toBuilder()
+                .firstName(staffDetails.getFirstName())
+                .lastName(staffDetails.getLastName())
+                .email(staffDetails.getEmail())
+                .department(staffDetails.getDepartment())
+                .contactNumber(staffDetails.getContactNumber());
         if (staffDetails.getImage() != null) {
-            Image existingImage = staff.getImage();
+            Image existingImage = existingStaff.getImage();
             if (existingImage == null) {
                 existingImage = new Image();
-                staff.setImage(existingImage);
+            } else {
+                Image newImage = staffDetails.getImage();
+                existingImage.setName(newImage.getName());
+                existingImage.setData(newImage.getData());
             }
-            Image newImage = staffDetails.getImage();
-            existingImage.setName(newImage.getName());
-            existingImage.setData(newImage.getData());
+            existingStaff.toBuilder().image(existingImage);
         }
-        return staffRepository.save(staff);
+        Staff updatedStaff = staffBuilder.build();
+        return staffRepository.save(updatedStaff);
     }
 
     @Override
@@ -68,6 +72,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Page<Staff> searchStaff(String query, Pageable pageable) {
-        return staffRepository.searchStaff(query, pageable);
+        Specification<Staff> specification = new StaffSpecification(query);
+        return staffRepository.findAll(specification, pageable);
     }
 }

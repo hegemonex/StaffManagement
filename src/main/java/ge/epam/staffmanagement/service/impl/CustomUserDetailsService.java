@@ -1,6 +1,7 @@
 package ge.epam.staffmanagement.service.impl;
 
 import ge.epam.staffmanagement.entity.User;
+import ge.epam.staffmanagement.model.UserDTO;
 import ge.epam.staffmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,8 +25,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
-    public void saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+    public void saveUser(UserDTO userDTO) {
+        User newUser = User.builder().username(userDTO.getUsername()).password(passwordEncoder.encode(userDTO.getPassword())).build();
+        userRepository.save(newUser);
     }
 }

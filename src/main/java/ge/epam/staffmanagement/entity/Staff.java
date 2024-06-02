@@ -2,14 +2,14 @@ package ge.epam.staffmanagement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@Builder
 public class Staff {
 
     @Id
@@ -32,4 +32,15 @@ public class Staff {
     @OneToOne(mappedBy = "staff", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("staff")
     private Image image;
+
+    public StaffBuilder toBuilder() {
+        return new StaffBuilder()
+                .id(this.id)
+                .firstName(this.firstName)
+                .lastName(this.lastName)
+                .email(this.email)
+                .department(this.department)
+                .contactNumber(this.contactNumber)
+                .image(this.image);
+    }
 }
