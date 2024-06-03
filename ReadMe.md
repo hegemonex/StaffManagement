@@ -3,6 +3,7 @@ Staff Management Application
 Overview
 This repository contains a web application built for managing staff members. It provides functionalities for user registration, authentication, and access to a private dashboard. The application incorporates robust security measures, data validation, and database management.
 
+//FIXME: beautify it pls because it's impossible to read https://www.makeareadme.com/
 Public Pages
 Register: Allows new users to create an account.
 URL: http://localhost:8090/register.html

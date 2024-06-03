@@ -42,6 +42,7 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff updateStaff(long id, Staff staffDetails) {
+        //FIXME: for what purpose u are doing all of this things?? it can be done via mapper (mapstruct)
         Staff existingStaff = getStaffById(id);
         Staff.StaffBuilder staffBuilder = existingStaff.toBuilder()
                 .firstName(staffDetails.getFirstName())

@@ -6,6 +6,7 @@ import ge.epam.staffmanagement.model.UserDTO;
 import ge.epam.staffmanagement.service.impl.CustomUserDetailsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ import java.util.Map;
 
 @Api(value = "Authentication Controller", description = "REST APIs for user authentication")
 @RestController
+@Validated
 public class AuthController {
     private static final String TOKEN_TYPE_ACCESS = "accessToken";
     private static final String TOKEN_TYPE_REFRESH = "refreshToken";
@@ -47,15 +50,16 @@ public class AuthController {
 
     @ApiOperation(value = "Register a new user", response = ResponseEntity.class)
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTO userDTO) {
-        String username = userDTO.getUsername();
-        String password = userDTO.getPassword();
-        if (username == null || username.length() < 5) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username must be at least 5 characters long.");
-        }
-        if (password == null || password.length() < 8) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 8 characters long.");
-        }
+    public ResponseEntity<String> registerUser(@RequestBody @Valid UserDTO userDTO) {
+        //FIXME: you don't need it after markup with @Validated the controller and @Valid on Dto. Delete code bellow
+//        String username = userDTO.getUsername();
+//        String password = userDTO.getPassword();
+//        if (username == null || username.length() < 5) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username must be at least 5 characters long.");
+//        }
+//        if (password == null || password.length() < 8) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must be at least 8 characters long.");
+//        }
         userDetailsService.saveUser(userDTO);
         return ResponseEntity.ok("User registered successfully");
     }

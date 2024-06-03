@@ -49,7 +49,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 userDetails = userDetailsService.loadUserByUsername(userName);
             } catch (UsernameNotFoundException e) {
-                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"); //FIXME: don't use magic strings
                 return;
             }
             if (Boolean.TRUE.equals(jwtService.validateToken(jwtToken))) {
@@ -58,7 +58,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }else{
-                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");//FIXME: don't use magic strings
                 return;
             }
         }
