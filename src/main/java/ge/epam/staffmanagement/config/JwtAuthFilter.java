@@ -23,6 +23,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer ";
+    private static final String UNAUTHORIZED = "Unauthorized";
 
     public JwtAuthFilter(JwtService jwtService, @Lazy CustomUserDetailsService userDetailsService) {
         this.jwtService = jwtService;
@@ -49,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             try {
                 userDetails = userDetailsService.loadUserByUsername(userName);
             } catch (UsernameNotFoundException e) {
-                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, UNAUTHORIZED);
                 return;
             }
             if (Boolean.TRUE.equals(jwtService.validateToken(jwtToken))) {
@@ -58,7 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }else{
-                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                sendError(response, HttpServletResponse.SC_UNAUTHORIZED, UNAUTHORIZED);
                 return;
             }
         }

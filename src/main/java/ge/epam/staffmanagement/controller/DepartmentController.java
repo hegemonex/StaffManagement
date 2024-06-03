@@ -25,9 +25,11 @@ public class DepartmentController {
     public List<Department> getAllDepartments() {
         return departmentService.getAllDepartments();
     }
+
     @ApiOperation(value = "Get a department by Id")
     @GetMapping("/id")
     public Department getDepartmentById(long id) {
         return departmentService.getDepartmentById(id);
     }
+
 }

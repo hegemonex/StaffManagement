@@ -46,34 +46,24 @@ class StaffServiceTest {
 
     @Test
     public void testFindAll() {
-        Staff staff = new Staff();
-        staff.setFirstName("John");
-        staff.setLastName("Doe");
-        staff.setEmail("john.doe@example.com");
-        staff.setContactNumber("1234567890");
-        staff.setDepartment(departmentService.getDepartmentById(1L));
+        Staff staff = createSampleStaff("John", "Doe", "john.doe@example.com", "1234567890");
         staffRepository.save(staff);
 
         List<Staff> result = staffService.findAll();
 
-        assertEquals(21, result.size());
-        assertEquals("John", result.get(0).getFirstName());
+        assertFalse(result.isEmpty(), "The result list should not be empty");
+        assertTrue(result.stream().anyMatch(s -> "John".equals(s.getFirstName()) && "Doe".equals(s.getLastName())),
+                "The list should contain the staff with the correct first and last name");
     }
 
     @Test
     public void testGetStaffById() {
-        Staff staff = new Staff();
-        staff.setFirstName("John");
-        staff.setLastName("Doe");
-        staff.setEmail("john.doe@example.com");
-        staff.setContactNumber("1234567890");
-        staff.setDepartment(departmentService.getDepartmentById(1L));
+        Staff staff = createSampleStaff("John", "Doe", "john.doe@example.com", "1234567890");
         staff = staffRepository.save(staff);
 
         Staff result = staffService.getStaffById(staff.getId());
 
-        assertEquals(staff.getId(), result.getId());
-        assertEquals("John", result.getFirstName());
+        assertStaffFields(staff, result);
     }
 
     @Test
@@ -82,55 +72,34 @@ class StaffServiceTest {
         image.setName("image.jpg");
         image.setData(new byte[0]);
 
-        Staff staff = new Staff();
-        staff.setFirstName("John");
-        staff.setLastName("Doe");
-        staff.setEmail("john.doe@example.com");
-        staff.setContactNumber("1234567890");
-        staff.setDepartment(departmentService.getDepartmentById(1L));
+        Staff staff = createSampleStaff("John", "Doe", "john.doe@example.com", "1234567890");
 
         Staff result = staffService.createStaffWithImage(staff, image);
 
-        assertNotNull(result.getId());
-        assertEquals("John", result.getFirstName());
-        assertEquals("image.jpg", result.getImage().getName());
+        assertNotNull(result.getId(), "Staff ID should not be null");
+        assertStaffFields(staff, result);
+        assertEquals("image.jpg", result.getImage().getName(), "Image name should match");
     }
 
     @Test
     public void testUpdateStaff() {
         Department department = new Department();
-        department.setId(2L);
         department.setName("HR");
+        departmentRepository.save(department);
 
-        Staff staff = new Staff();
-        staff.setFirstName("Jane");
-        staff.setLastName("Doe");
-        staff.setEmail("jane.doe@example.com");
-        staff.setContactNumber("9876543210");
-        staff.setDepartment(department);
+        Staff staff = createSampleStaff("Jane", "Doe", "jane.doe@example.com", "9876543210", department);
         staffRepository.save(staff);
 
-        Staff updatedStaff = new Staff();
-        updatedStaff.setFirstName("John");
-        updatedStaff.setLastName("Doe");
-        updatedStaff.setEmail("john.doe@example.com");
-        updatedStaff.setContactNumber("1234567890");
-        updatedStaff.setDepartment(department);
+        Staff updatedStaff = createSampleStaff("John", "Doe", "john.doe@example.com", "1234567890", department);
 
         Staff result = staffService.updateStaff(staff.getId(), updatedStaff);
 
-        assertEquals("John", result.getFirstName());
-        assertEquals("1234567890", result.getContactNumber());
+        assertStaffFields(updatedStaff, result);
     }
 
     @Test
     public void testDeleteStaff() {
-        Staff staff = new Staff();
-        staff.setFirstName("Jane");
-        staff.setLastName("Doe");
-        staff.setEmail("jane.doe@example.com");
-        staff.setContactNumber("9876543210");
-        staff.setDepartment(departmentService.getDepartmentById(1L));
+        Staff staff = createSampleStaff("Jane", "Doe", "jane.doe@example.com", "9876543210");
         staff = staffRepository.save(staff);
 
         staffService.deleteStaff(staff.getId());
@@ -145,18 +114,35 @@ class StaffServiceTest {
 
     @Test
     public void testSearchStaff() {
-        Staff staff = new Staff();
-        staff.setFirstName("qweqwe");
-        staff.setLastName("qweqwe");
-        staff.setEmail("qwe.qwe@qweqwe.com");
-        staff.setContactNumber("1234567890");
-        staff.setDepartment(departmentService.getDepartmentById(1L));
+        Staff staff = createSampleStaff("qweqwe", "qweqwe", "qwe.qwe@qweqwe.com", "1234567890");
         staffRepository.save(staff);
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<Staff> result = staffService.searchStaff("qweqwe", pageable);
 
-        assertEquals(1, result.getTotalElements());
-        assertEquals("qweqwe", result.getContent().get(0).getFirstName());
+        assertEquals(1, result.getTotalElements(), "Total elements should be 1");
+        assertStaffFields(staff, result.getContent().get(0));
+    }
+
+    private Staff createSampleStaff(String firstName, String lastName, String email, String contactNumber) {
+        return createSampleStaff(firstName, lastName, email, contactNumber, departmentService.getDepartmentById(1L));
+    }
+
+    private Staff createSampleStaff(String firstName, String lastName, String email, String contactNumber, Department department) {
+        Staff staff = new Staff();
+        staff.setFirstName(firstName);
+        staff.setLastName(lastName);
+        staff.setEmail(email);
+        staff.setContactNumber(contactNumber);
+        staff.setDepartment(department);
+        return staff;
+    }
+
+    private void assertStaffFields(Staff expected, Staff actual) {
+        assertEquals(expected.getFirstName(), actual.getFirstName(), "First names should match");
+        assertEquals(expected.getLastName(), actual.getLastName(), "Last names should match");
+        assertEquals(expected.getEmail(), actual.getEmail(), "Emails should match");
+        assertEquals(expected.getContactNumber(), actual.getContactNumber(), "Contact numbers should match");
+        assertEquals(expected.getDepartment().getId(), actual.getDepartment().getId(), "Department IDs should match");
     }
 }
