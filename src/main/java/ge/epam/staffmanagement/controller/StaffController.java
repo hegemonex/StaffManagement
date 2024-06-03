@@ -46,7 +46,7 @@ public class StaffController {
     @ApiOperation(value = "View a list of available staff", response = Page.class)
     @GetMapping
     public Page<Staff> getStaff(
-            @RequestParam(defaultValue = "") String query,
+            @RequestParam(defaultValue = "") String query,//FIXME: query injection vulnerability
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -107,6 +107,7 @@ public class StaffController {
         return staffDetails;
     }
 
+    //FIXME: for what purpose do u need it? for what purpose do you need RequestDTO??? it can be rewritten by normal dto mapping via mapstruct + jakarta validation
     private ValidateDTO validateStaff(String requestDto) {
         ValidateDTO validateDTO = new ValidateDTO();
         try {

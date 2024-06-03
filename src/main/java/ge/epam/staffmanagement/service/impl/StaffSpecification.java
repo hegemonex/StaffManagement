@@ -29,6 +29,7 @@ public class StaffSpecification implements Specification<Staff> {
         if (query == null || query.isEmpty()) {
             return criteriaBuilder.conjunction();
         }
+        //FIXME: don't use raw query, you should apply some 'SearchStuffDto' and work with that. Pls google it
         String likePattern = "%" + query.toLowerCase() + "%";
         return criteriaBuilder.or(
                 criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), likePattern),

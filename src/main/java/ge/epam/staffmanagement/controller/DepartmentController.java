@@ -20,6 +20,7 @@ public class DepartmentController {
     public DepartmentController(DepartmentService departmentService) {
         this.departmentService = departmentService;
     }
+    //FIXME: Beautify it pls, impossible to read (split with empty row your endpoints)
     @ApiOperation(value = "View a list of available departments", response = List.class)
     @GetMapping
     public List<Department> getAllDepartments() {
